@@ -11,6 +11,8 @@
 typedef void* Type;
 typedef struct strGraph Graph;
 typedef enum {true, flase}boolean;
+typedef void (*CMP)(void*);
+typedef void (*Print)(void*);
 
 Graph graph_create(CMP comparator);
 void graph_destroy(Graph g);
@@ -21,5 +23,4 @@ unsigned long graph_edgeCount(Graph g);
 unsigned long graph_outDegree(Graph g, unsigned long source);
 boolean graph_hasEdge(Graph g, unsigned long source, unsigned long sink);
 boolean graph_print(Graph g, Print p);
-
 #endif /* GRAPH_H_ */
