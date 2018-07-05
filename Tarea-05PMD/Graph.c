@@ -36,8 +36,17 @@ Graph *graph_create(CMP comparator){
 }
 boolean graph_addVertex(Graph graph, Type data){
     Node *new = (Node*)malloc(sizeof(struct strNode));
+    
+    // In case the Graph has 0 vertices
     if((*graph).num_vertices==0){
         (*new).data = data;
-        (*new).id =
+        (*new).size++;
+        (*new).id =(*new).size;
+        int *edge = NULL;
+    }
+    else{
+        
     }
 }
+
+
