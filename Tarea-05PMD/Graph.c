@@ -5,24 +5,24 @@
 
 struct node
 {
-	int id;
-	Type data;
+    int id;
+    Type data;
 }strNode;
 
 typedef struct strNode Node;
 
-struct grph
+struct graph
 {
-	int* arry=0;
-	int Nvertex;
-	int Nedge;
+    int* arry=0;
+    int Nvertex;
+    int Nedge;
 }strGraph;
 
 unsigned long graph_vertexCount(Graph g)
 {
-	return g->Nvertex;
+    return g->Nvertex;
 }
 unsigned long graph_edgeCount(Graph g)
 {
-	return g->Nedge;
+    return g->Nedge;
 }
