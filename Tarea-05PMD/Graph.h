@@ -8,10 +8,10 @@ typedef enum {true, false}boolean;
 typedef int (*CMP)(void *, void *);
 typedef void (*Print)(void*);
 
-Graph graph_create(CMP comparator);//Crea una nueva instancia del contenedor Graph y retorna su dirección de memoria.
+Graph graph_create(CMP comparator, Print print);//Crea una nueva instancia del contenedor Graph y retorna su dirección de memoria.
 void graph_destroy(Graph graph);//Destruye la instancia del contenedor Graph.
 boolean graph_addVertex(Graph graph, Type data);//Agrega un nuevo vértice al grafo de manera ordenada
-boolean graph_addEdge(Graph graph, unsigned long source, unsigned long sink);//Agrega una nueva arista al grafo
+boolean graph_addEdge(Graph graph, Type source, Type sink);//Agrega una nueva arista al grafo
 unsigned long graph_vertexCount(Graph graph);//Retorna el número de vértices que existen en el grafo
 unsigned long graph_edgeCount(Graph graph);//Retorna el número de aristas que existen en el grafo.
 unsigned long graph_outDegree(Graph graph, unsigned long source);//Retorna el número de vértices sucesores que tiene en su lista el vértice
