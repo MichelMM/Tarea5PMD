@@ -61,7 +61,7 @@ NodeL * createNode(Type data){
 	NodeL *new;
 	new=(NodeL *)malloc(sizeof(NodeL));
 	new->Data=(void *)malloc(sizeof(*data));
-	memcpy(new->Data, data, sizeof(*data));
+	//memcpy(new->Data, data, sizeof(*data));
 	new->next=NULL;
 	new->prior=NULL;
 	return new;
@@ -211,11 +211,26 @@ boolean graph_addVertex(Graph graph, Type data) {
 }
 
 boolean graph_addEdge(Graph graph, Type source, Type sink){
-	
+
 	NodeG Source = graph->array[source];
 	NodeG Sink = graph->array[sink];
+	if(graph->array[source]==NULL || graph->array[sink]==NULL){
 
+	}
 
-	list_add(Graph->array[source]->vertex_list,Graph->array[sink]);
+	list_add(graph->array[source]->vertex_list,graph->array[sink]);
 	return true;
+}
+
+
+void graph_destroy(Graph graph){
+	int i=0;
+	while(graph->num_vertex != 0)
+	{
+		list_destroy(graph->array[i].vertex_list);
+		free(graph->array[i]);
+		graph->num_vertex--;
+		i++;
+	}
+	free(graph);
 }
