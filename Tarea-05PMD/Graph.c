@@ -1,130 +1,255 @@
+//Directivas al preprocesador
 #include <stdio.h>
 #include <stdlib.h>
-#include "set.h"
+#include <string.h>
+#include "Graph.h"
 
-struct strNode {
-	Type data;
-	struct strNode *left, *right;
+struct strNodeL {
+	Type Data;
+	struct strNodeL *next;
+	struct strNodeL *prior;
 };
 
-typedef struct strNode Node;
+typedef struct strNodeL NodeL;
 
-struct strSet {
-	Node *root;
-	int size;
-	Comparador cmpFunction;
-	Clone cloneFunction;
-	MyFree freeFunction;
+struct strList {
+	NodeL *first, *last;
+	unsigned int size;
+};
+
+
+struct strNodeG {
+	int id;
+	Type data;
+	List vertex_list;
+};
+
+
+typedef struct strNodeG NodeG;
+
+struct strGraph {
+	NodeG *array;
+	int num_vertex;
+	int num_edges;
+	CMP cmpFunction;
 	Print printFunction;
 };
 
-Set setCreate(Comparador cmp, Clone clone, MyFree myFree) {
-	Set newSet = (Set) malloc(sizeof(struct strSet));
-	if (newSet != NULL) {
-		newSet->root = NULL;
-		newSet->size = 0;
-		newSet->cmpFunction = cmp;
-		newSet->cloneFunction = clone;
-		newSet->freeFunction = myFree;
-	}
-	return newSet;
+
+
+
+
+/*--------------------------------------*/
+/*              List                    */
+/*--------------------------------------*/
+
+List list_create(){
+	List l;
+	l=(List)malloc(sizeof(struct strList));
+	l->size=0;
+	l->last=NULL;
+	l->first=NULL;
+	return l;
 }
 
-int setSize(Set who){
-	if(who!=NULL)
-		return who->size;
-	return -1;
+int list_size(List l){
+	if(l!=NULL)
+		return l->size;
+	else
+		return -1;
 }
 
-Node * newNode(Type data){
-	Node * new=(Node *)malloc(sizeof(Node));
-	if(new!=NULL){
-		new->left=NULL;
-		new->right=NULL;
-		new->data=data;
-	}
+NodeL * createNode(Type data){
+	NodeL *new;
+	new=(NodeL *)malloc(sizeof(NodeL));
+	new->Data=(void *)malloc(sizeof(*data));
+	//memcpy(new->Data, data, sizeof(*data));
+	new->next=NULL;
+	new->prior=NULL;
 	return new;
 }
 
-bool setAdd(Set who,Type data){
-	//Node *new = newNode(data);
-	//Type temp=who->cloneFunction(data);
-	Node *new=newNode(who->cloneFunction(data));
-	bool found=false,added=false;
-	int status;
-	if(who->root==NULL){
-		who->root=new;
-		who->size++;
-	}else{
-		//El árbol ya tiene elementos
-		Node *current;
-		current=who->root;
-		while((!found) && (!added)){
-			status=who-> cmpFunction(new->data,current->data);
-			if(status==0){
-				return false;
-			}
+void list_add(List l, Type data){
+	//Agrega un elemento al final de la lista
+	//e incrementa el size
+	if(l!=NULL){
+		NodeL *new;
+		new=createNode(data);
+		if(l->size==0)
+		{
+			l->first=new;
+			l->last=new;
+		}
+		else{
+			l->last->next=new;
+			new->prior=l->last;
+			l->last=new;
+		}
+		l->size++;
+	}
+}
 
+Type list_get(List l, int p){
+	Type value=NULL;
+	NodeL *current=NULL;
+	int i=0;
+	int s=l->size;
+	if(l!=NULL){
+		if ((p>=0) && (p<s)){
+			current=l->first;
+			while(i<p){
+				current=current->next;
+				i++;
+			}
+			value=current->Data;
+		}
+	}
+	return value;
+}
+
+void list_set(List l, Type data, int p){
+	NodeL *current=NULL;
+	int i=0;
+	int s=l->size;
+	if(l!=NULL){
+		if ((p>=0) && (p<s)){
+			current=l->first;
+			while(i<p){
+				current=current->next;
+				i++;
+			}
+			current->Data=data;
 		}
 	}
 }
 
-void setPrint(Set who){
-	if(who!=NULL)
-		printData(who,who->root);
-}
-
-void printData(Set who,Node *Current){
-	if(Current!=NULL){
-		who->printFunction(Current->data);
-		printData(who,Current->left);
-		printData(who,Current->right);
-	}
-}
-
-void set_print(Set who,Type data){
-	Node * current;
-	if(who != NULL){
-		while(current!=NULL){
-			if(who->cmpFunction(data,current->data)<0)
-				return current;
+Type list_remove(List l, int p){
+	NodeL *current=NULL;
+	Type tmp;
+	int i=0;
+	int s=l->size;
+	if(l!=NULL){
+		//Buscar el nodo a remover
+		if ((p>=0) && (p<s)){
+			current=l->first;
+			while(i<p){
+				current=current->next;
+				i++;
+			}
+		}
+		if((p==0)&&(s==1)){
+			tmp=current->Data;
+			l->first=NULL;
+			l->last=NULL;
+			l->size=0;
+			free(current);
+			return tmp;
+		}else{
+			if(p==0) //Se va a eliminar el nodo inicial
+			{
+				tmp=current->Data;
+				l->first=current->next;
+				l->first->prior=NULL;
+				l->size--;
+				free(current);
+				return tmp;
+			}
 			else{
-				if(who->cmpFunction(data,current->data)<0){
-					current=current->left;
-
-				}else{
-					current=current->right;
+				if(p==(s-1))//Se va a eliminar el nodo final
+				{
+					tmp=current->Data;
+					l->last=current->prior;
+					l->last->next=NULL;
+					l->size--;
+					free(current);
+					return tmp;
+				}
+				else
+				{//El elemento a remover esta en medio
+					tmp=current->Data;
+					current->prior->next=current->next;
+					current->next->prior=current->prior;
+					free(current);
+					return tmp;
 				}
 			}
 		}
+
 	}
 	return NULL;
 }
 
-bool removeNode(Set who, Node *current){
-	//Caso: es una hoja
-	if(current->left==NULL && current->right==NULL){
-		who->freeFunction(current);
-	}else{
+void list_destroy(List l){
+	while(list_size(l)>0)
+		list_remove(l, 0);
+	free(l);
+}
+
+/*--------------------------------------*/
+/*              Graph                   */
+/*--------------------------------------*/
+
+Graph graph_create(CMP comparator,Print print) {
+	Graph new = (Graph) malloc(sizeof(struct strGraph));
+	new->array = NULL;
+	new->num_edges = 0;
+	new->num_vertex = 0;
+	new->cmpFunction = comparator;
+	new->printFunction = print;
+	return new;
+}
+
+boolean graph_addVertex(Graph graph, Type data) {
+	NodeG *new = (NodeG*) malloc(sizeof(struct strNodeG));
+	graph->num_vertex++;
+	int size =graph->num_vertex;
+	graph->array = (NodeG*)realloc(graph->array,sizeof(struct strNodeG)*size);
+	new->data = data;
+	(*new).id = size;
+	List newL;
+	newL= list_create();
+	new->vertex_list = newL;
+//	graph->array[graph->num_vertex]=new;
+	((*graph).array[size])=*new;
+	return true;
+}
+
+boolean graph_addEdge(Graph graph, Type source, Type sink){
+	int flag;
+	Type *compare;
+
+	for(int i=0;i<graph->num_vertex;i++){
+//		*compare = *(graph->array[i]->data);
+		graph-> cmpFunction(graph->array[i]->data,source);
+		if(source== || sink==compare){
+			flag++;
+		}
+
 	}
 
 
+
+
+
+
+//
+//	while(){
+//
+//	}
+//
+//	list_add(graph->array[source]->vertex_list,graph->array[sink]);
+//	return true;
 }
 
-Node * searchNode(Set who, Type data){
-	Node preious;
-	previous = current;
 
-}
-
-
-bool setRemove(Set s,Type data){
-	Node * current;
-	current=SearchNode(s,data);
-	if(current==NULL)
-		return false;
-	else{
-
+void graph_destroy(Graph graph){
+	int i=0;
+	while(graph->num_vertex != 0)
+	{
+		list_destroy(graph->array[i].vertex_list);
+		free(graph->array[i]);
+		graph->num_vertex--;
+		i++;
 	}
-
+	free(graph);
 }
