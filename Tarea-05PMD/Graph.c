@@ -56,7 +56,7 @@ int list_size(List l) {
 NodeL * createNode(Type data) {
 	NodeL *new;
 	new = (NodeL *) malloc(sizeof(NodeL));
-	new->Data = (void *) malloc(sizeof(*data));
+	new->Data = data;
 	//memcpy(new->Data, data, sizeof(*data));
 	new->next = NULL;
 	new->prior = NULL;
@@ -209,7 +209,7 @@ boolean graph_addEdge(Graph graph, Type source, Type sink) {
 	NodeG *Sink;
 	NodeG *Source;
 	for (int i = 0; i < graph->num_vertex; i++) {
-		//        *compare = *(graph->array[i]->data);
+		//*compare = *(graph->array[i]->data);
 		if (graph->cmpFunction(graph->array[i].data, source) == true
 				|| graph->cmpFunction(graph->array[i].data, sink) == true) {
 			if (graph->cmpFunction(graph->array[i].data, sink) == true) {
@@ -244,13 +244,55 @@ void graph_destroy(Graph graph) {
 	free(graph);
 
 }
+
 unsigned long graph_vertexCount(Graph graph){
 	return graph->num_vertex;
 }
 unsigned long graph_edgeCount(Graph graph){
 	return graph->num_edges;
 }
-unsigned long graph_outDegree(Graph graph, unsigned long source){
-	return list_size(&graph->array[source]->vertex_list);
+unsigned long graph_outDegree(Graph graph, Type source){
+	NodeG *Source;
+	for (int i = 0; i < graph->num_vertex; i++){
+		if (graph->cmpFunction(graph->array[i].data, source) == true) {
+						Source = &graph->array[i];
+					}
+	}
+	return list_size(Source->vertex_list);
 }
 
+boolean graph_hasEdge(Graph graph, Type source, Type sink){
+	int flag = 0;
+		NodeG *Sink;
+		NodeG *Source;
+		for (int i = 0; i < graph->num_vertex; i++) {
+			//*compare = *(graph->array[i]->data);
+			if (graph->cmpFunction(graph->array[i].data, source) == true
+					|| graph->cmpFunction(graph->array[i].data, sink) == true) {
+				if (graph->cmpFunction(graph->array[i].data, sink) == true) {
+					Sink = &graph->array[i];
+				}
+				if (graph->cmpFunction(graph->array[i].data, source) == true) {
+					Source = &graph->array[i];
+				}
+				flag++;
+			}
+		}
+		if (flag == 2) {
+			for (int i = 0; i < Source->vertex_list->size; i++) {
+				if (Sink == list_get(Sink->vertex_list, i)) {
+					return true;
+				}
+			}
+		}
+		return false;
+}
+
+boolean graph_print(Graph graph){	
+	NodeG *Current;
+	for(int i = 0;i<graph->num_vertex;i++){
+		Current=&graph->array[i];
+		graph->printFunction(Current->data);
+	}
+	return true;
+}
