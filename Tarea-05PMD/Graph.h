@@ -3,7 +3,7 @@
 
 typedef void* Type;
 typedef struct strGraph *Graph;
-typedef struct strList *List;
+typedef struct	 strList *List;
 typedef enum {true, false}boolean;
 typedef int (*CMP)(void *, void *);
 typedef void (*Print)(void*);
@@ -14,9 +14,9 @@ boolean graph_addVertex(Graph graph, Type data);//Agrega un nuevo vértice al gr
 boolean graph_addEdge(Graph graph, Type source, Type sink);//Agrega una nueva arista al grafo
 unsigned long graph_vertexCount(Graph graph);//Retorna el número de vértices que existen en el grafo
 unsigned long graph_edgeCount(Graph graph);//Retorna el número de aristas que existen en el grafo.
-unsigned long graph_outDegree(Graph graph, unsigned long source);//Retorna el número de vértices sucesores que tiene en su lista el vértice
-boolean graph_hasEdge(Graph graph, unsigned long source, unsigned long sink);//Retorna True si el vértice del grafo que contiene source tiene en su lista de sucesores un vértice que contiene sink.
-boolean graph_print(Graph graph, Print p);//Imprime todos los datos almacenados en el grafo.
+unsigned long graph_outDegree(Graph graph,Type source);//Retorna el número de vértices sucesores que tiene en su lista el vértice
+boolean graph_hasEdge(Graph graph, Type source, Type sink);//Retorna True si el vértice del grafo que contiene source tiene en su lista de sucesores un vértice que contiene sink.
+boolean graph_print(Graph graph);//Imprime todos los datos almacenados en el grafo.
 
 List list_create();//Crea un ejemplar List con memoria dinámica y asigna NULL, NULL y 0 a sus elementos.
 int list_size(List l);//Elimina a todos los nodos y a la lista.
