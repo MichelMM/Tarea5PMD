@@ -244,4 +244,13 @@ void graph_destroy(Graph graph) {
 	free(graph);
 
 }
+unsigned long graph_vertexCount(Graph graph){
+	return graph->num_vertex;
+}
+unsigned long graph_edgeCount(Graph graph){
+	return graph->num_edges;
+}
+unsigned long graph_outDegree(Graph graph, unsigned long source){
+	return list_size(&graph->array[source]->vertex_list);
+}
 
