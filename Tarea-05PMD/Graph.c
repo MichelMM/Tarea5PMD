@@ -31,6 +31,7 @@ struct strGraph {
 	int num_edges;
 	CMP cmpFunction;
 	Print printFunction;
+	Clone cloneFunction;
 };
 
 /*--------------------------------------*/
@@ -178,29 +179,34 @@ void list_destroy(List l) {
 /*              Graph                   */
 /*--------------------------------------*/
 
-Graph graph_create(CMP comparator, Print print) {
+Graph graph_create(CMP comparator, Print print, Clone clonar) {
 	Graph new = (Graph) malloc(sizeof(struct strGraph));
 	new->array = NULL;
 	new->num_edges = 0;
 	new->num_vertex = 0;
 	new->cmpFunction = comparator;
 	new->printFunction = print;
+	new->cloneFunction= clonar;
+	printf("Impresionanti1");
 	return new;
+
 }
 
 boolean graph_addVertex(Graph graph, Type data) {
 	NodeG *new = (NodeG*) malloc(sizeof(struct strNodeG));
-	graph->num_vertex++;
+	Type clon = graph->cloneFunction(data);
+	(graph->num_vertex)++;
 	int size = graph->num_vertex;
-	graph->array = (NodeG*) realloc(graph->array,
-			sizeof(struct strNodeG) * size);
-	new->data = data;
+	graph->array = (NodeG*) realloc(graph->array,sizeof(struct strNodeG) * size);
+	new->data = clon;
 	(*new).id = size;
 	List newL;
 	newL = list_create();
 	new->vertex_list = newL;
 //	graph->array[graph->num_vertex]=new;
-	((*graph).array[size]) = *new;
+//	((*graph).array[size]) = new;
+	graph->array[size]=*new;
+	printf("Impresionanti2");
 	return true;
 }
 
@@ -288,11 +294,11 @@ boolean graph_hasEdge(Graph graph, Type source, Type sink){
 		return false;
 }
 
-boolean graph_print(Graph graph){	
-	NodeG *Current;
+void graph_print(Graph graph){
 	for(int i = 0;i<graph->num_vertex;i++){
-		Current=&graph->array[i];
-		graph->printFunction(Current->data);
+		printf("Impresionanti3");
+		graph->printFunction(graph->array[i].data);
 	}
-	return true;
 }
+
+
