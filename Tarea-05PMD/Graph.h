@@ -5,11 +5,10 @@ typedef void* Type;
 typedef struct strGraph *Graph;
 typedef struct	 strList *List;
 typedef enum {true, false}boolean;
-typedef int (*CMP)(void *, void *);
+typedef int (*CMP)(Type, Type);
 typedef void (*Print)(void*);
-typedef Type (*Clone) (Type);
 
-Graph graph_create(CMP comparator, Print print, Clone clonar);//Crea una nueva instancia del contenedor Graph y retorna su dirección de memoria.
+Graph graph_create(CMP comparator, Print print);//Crea una nueva instancia del contenedor Graph y retorna su dirección de memoria.
 void graph_destroy(Graph graph);//Destruye la instancia del contenedor Graph.
 boolean graph_addVertex(Graph graph, Type data);//Agrega un nuevo vértice al grafo de manera ordenada
 boolean graph_addEdge(Graph graph, Type source, Type sink);//Agrega una nueva arista al grafo
