@@ -26,7 +26,4 @@ void list_set(List l, Type data, int p);//Reemplaza el elemento en la posición 
 Type list_remove(List l, int p);//Elimina y devuelve el elemento en la posición p. Decrementa el tamaño en uno.
 void list_destroy(List l);//Inserta un nuevo elemento en la posición p. Incrementa el tamaño en uno.
 
-
-
-
 #endif /* GRAPH_H_ */
