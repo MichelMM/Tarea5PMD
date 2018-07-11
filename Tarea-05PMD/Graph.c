@@ -14,7 +14,7 @@ typedef struct strNodeL NodeL;
 
 struct strList {
 	NodeL *first, *last;
-	unsigned int size;
+	unsigned long size;
 };
 
 struct strNodeG {
@@ -31,7 +31,6 @@ struct strGraph {
 	int num_edges;
 	CMP cmpFunction;
 	Print printFunction;
-	Clone cloneFunction;
 };
 
 /*--------------------------------------*/
@@ -179,62 +178,72 @@ void list_destroy(List l) {
 /*              Graph                   */
 /*--------------------------------------*/
 
-Graph graph_create(CMP comparator, Print print, Clone clonar) {
+Graph graph_create(CMP comparator, Print print) {
 	Graph new = (Graph) malloc(sizeof(struct strGraph));
 	new->array = NULL;
 	new->num_edges = 0;
 	new->num_vertex = 0;
 	new->cmpFunction = comparator;
 	new->printFunction = print;
-	new->cloneFunction= clonar;
-	printf("Impresionanti1");
 	return new;
-
 }
 
 boolean graph_addVertex(Graph graph, Type data) {
-	NodeG *new = (NodeG*) malloc(sizeof(struct strNodeG));
-	Type clon = graph->cloneFunction(data);
-	(graph->num_vertex)++;
-	int size = graph->num_vertex;
-	graph->array = (NodeG*) realloc(graph->array,sizeof(struct strNodeG) * size);
-	new->data = clon;
-	(*new).id = size;
+	for(int i=0;i<graph->num_vertex;i++){
+		if(graph->cmpFunction(graph->array[i].data,data)==true)
+			return false;
+	}
+	//printf("la funcion recibe data = %d\n", *(int*) data);
+	//NodeG *new = (NodeG*) malloc(sizeof(struct strNodeG));
+	//printf("Memoria %p\n", new);
+	////printf("Data: %d \n", *(int *) data);
+	graph->num_vertex++;
+	//printf("numero de vertices: %d\n", graph->num_vertex);
+	int size = graph->num_vertex - 1;
+	graph->array = (NodeG*) realloc(graph->array,sizeof(struct strNodeG) * graph->num_vertex);
+	graph->array[size].data = data;
+	graph->array[size].id = size;
 	List newL;
 	newL = list_create();
-	new->vertex_list = newL;
+	graph->array[size].vertex_list = newL;
 //	graph->array[graph->num_vertex]=new;
 //	((*graph).array[size]) = new;
-	graph->array[size]=*new;
-	printf("Impresionanti2");
+	//printf("new before %p\n", new);
+	//Aquí falla
+	//printf("new after %p\n", &graph->array[size]);
+	//printf("Array (clone): %d \n", *(int *) graph->array[size].data);
+
 	return true;
 }
 
 boolean graph_addEdge(Graph graph, Type source, Type sink) {
 	int flag = 0;
-	NodeG *Sink;
-	NodeG *Source;
+	unsigned long Sink;
+	unsigned long Source;
 	for (int i = 0; i < graph->num_vertex; i++) {
 		//*compare = *(graph->array[i]->data);
 		if (graph->cmpFunction(graph->array[i].data, source) == true
 				|| graph->cmpFunction(graph->array[i].data, sink) == true) {
 			if (graph->cmpFunction(graph->array[i].data, sink) == true) {
-				Sink = &graph->array[i];
+				Sink = i;
 			}
 			if (graph->cmpFunction(graph->array[i].data, source) == true) {
-				Source = &graph->array[i];
+				Source = i;
 			}
 			flag++;
 		}
 	}
+	//printf("Bandera: %d\n", flag);
 	if (flag == 2) {
-		for (int i = 0; i < Source->vertex_list->size; i++) {
-			if (Sink == list_get(Source->vertex_list, i)) {
+		for (int i = 0; i < graph->array[Source].vertex_list->size; i++) {
+			if (&graph->array[Sink]
+					== list_get(graph->array[Source].vertex_list, i)) {
 				return false;
 			}
-			list_add(Source->vertex_list, Sink);
-			return true;
 		}
+		list_add(graph->array[Source].vertex_list, &graph->array[Sink]);
+		graph->num_edges++;
+		return true;
 	}
 	return false;
 }
@@ -251,54 +260,53 @@ void graph_destroy(Graph graph) {
 
 }
 
-unsigned long graph_vertexCount(Graph graph){
+unsigned long graph_vertexCount(Graph graph) {
 	return graph->num_vertex;
 }
-unsigned long graph_edgeCount(Graph graph){
+unsigned long graph_edgeCount(Graph graph) {
 	return graph->num_edges;
 }
-unsigned long graph_outDegree(Graph graph, Type source){
-	NodeG *Source;
-	for (int i = 0; i < graph->num_vertex; i++){
+unsigned long graph_outDegree(Graph graph, Type source) {
+	unsigned long Source;
+	for (int i = 0; i < graph->num_vertex; i++) {
 		if (graph->cmpFunction(graph->array[i].data, source) == true) {
-						Source = &graph->array[i];
-					}
+			Source = i;
+		}
 	}
-	return list_size(Source->vertex_list);
+	return list_size(graph->array[Source].vertex_list);
 }
 
-boolean graph_hasEdge(Graph graph, Type source, Type sink){
+boolean graph_hasEdge(Graph graph, Type source, Type sink) {
 	int flag = 0;
-		NodeG *Sink;
-		NodeG *Source;
+		unsigned long Sink;
+		unsigned long Source;
 		for (int i = 0; i < graph->num_vertex; i++) {
 			//*compare = *(graph->array[i]->data);
 			if (graph->cmpFunction(graph->array[i].data, source) == true
 					|| graph->cmpFunction(graph->array[i].data, sink) == true) {
 				if (graph->cmpFunction(graph->array[i].data, sink) == true) {
-					Sink = &graph->array[i];
+					Sink = i;
 				}
 				if (graph->cmpFunction(graph->array[i].data, source) == true) {
-					Source = &graph->array[i];
+					Source = i;
 				}
 				flag++;
 			}
 		}
+		//printf("Bandera: %d\n", flag);
 		if (flag == 2) {
-			for (int i = 0; i < Source->vertex_list->size; i++) {
-				if (Sink == list_get(Sink->vertex_list, i)) {
+			for (int i = 0; i < graph->array[Source].vertex_list->size; i++) {
+				if (&graph->array[Sink] == list_get(graph->array[Source].vertex_list, i)) {
 					return true;
 				}
 			}
 		}
 		return false;
 }
-
-void graph_print(Graph graph){
-	for(int i = 0;i<graph->num_vertex;i++){
-		printf("Impresionanti3");
-		graph->printFunction(graph->array[i].data);
+void graph_print(Graph graph) {
+	for (int i = 0; i < graph->num_vertex; i++) {
+		graph->printFunction((graph->array[i].data));
+		//graph->printFunction(*((*Graph).array+i).data);
 	}
 }
-
 
