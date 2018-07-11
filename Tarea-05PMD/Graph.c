@@ -309,4 +309,3 @@ void graph_print(Graph graph) {
 		//graph->printFunction(*((*Graph).array+i).data);
 	}
 }
-
